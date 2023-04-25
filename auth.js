@@ -44,6 +44,7 @@ router.post('/createuser', [
                 state: req.body.state,
                 city: req.body.city,
                 phoneNumber: req.body.phoneNumber,
+                isAdmin: req.body.isAdmin,
                 password: securePassword
             })
             // await Country.create({
@@ -66,7 +67,7 @@ router.post('/createuser', [
             res.json({ authToken, user: user });
         }
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
@@ -105,7 +106,7 @@ router.get('/login', [
         }
 
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
@@ -136,7 +137,7 @@ router.get('/getuser', async (req, res) => {
         let users = await User.find().sort({ "salary": 1, "age": 1 });
         res.json(users);
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
@@ -148,7 +149,7 @@ router.put('/updateuser/:id', async (req, res) => {
     try {
         let newUser = {};
         if (name) { newUser.name = name };
-        if (age && (age > 10 && age < 100)) {
+        if (age && (age >= 10 && age <= 100)) {
             newUser.age = age
         };
         if (email) { newUser.email = email };
@@ -168,10 +169,10 @@ router.put('/updateuser/:id', async (req, res) => {
             return res.status(404).send("User not found");
         }
         getUsers = await User.findByIdAndUpdate(req.params.id, { $set: newUser }, { new: true });
-        let user = await User.find({});
+        let user = await User.find().sort({ "salary": 1, "age": 1 });
         res.json({ getUsers, user: user });
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
@@ -185,10 +186,10 @@ router.delete('/deleteuser/:id', async (req, res) => {
             return res.status(404).send("User not found");
         }
         getUsers = await User.findByIdAndDelete(req.params.id);
-        let user = await User.find({});
+        let user = await User.find().sort({ "salary": 1, "age": 1 });
         res.json({ "Success": "User has been deleted", user: user });
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
@@ -200,31 +201,31 @@ router.get("/getcountries", async function (req, res) {
         let countries = await Country.find({});
         res.status(200).json({ success: true, msg: 'Country Data', data: countries })
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
 
 // States list for dropdown
 
-router.post("/getstates", async function (req, res) {
+router.get("/getstates", async function (req, res) {
     try {
         let states = await State.find({ country: req.body.country });
         res.status(200).json({ success: true, msg: 'State Data', data: states })
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
 
 // Cities list for dropdown
 
-router.post("/getcities", async function (req, res) {
+router.get("/getcities", async function (req, res) {
     try {
         let cities = await City.find({ state: req.body.state });
         res.status(200).json({ success: true, msg: 'City Data', data: cities })
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
@@ -238,7 +239,7 @@ router.post("/storecountry", async function (req, res) {
         });
         res.status(200).json({ success: true, country })
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
@@ -253,7 +254,7 @@ router.post("/storestate", async function (req, res) {
         });
         res.status(200).json({ success: true, state })
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });
@@ -268,7 +269,7 @@ router.post("/storecity", async function (req, res) {
         });
         res.status(200).json({ success: true, city })
     } catch (error) {
-        console.error(error.messege);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
 });

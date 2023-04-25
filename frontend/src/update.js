@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Checkbox, Form, Dropdown, Label } from 'semantic-ui-react';
+import { Button, Checkbox, Form, Dropdown, Label, Message } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
 import { Country, State, City } from 'country-state-city';
 import 'semantic-ui-css/semantic.min.css';
 import validator from 'validator';
 
-export default function Update() {
+export default function Update({ admin }) {
     const [countryOptions, setCountryOptions] = useState([]);
     const [stateOptions, setStateOptions] = useState([]);
     const [cityOptions, setCityOptions] = useState([]);
@@ -22,6 +22,7 @@ export default function Update() {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [checkbox, setCheckbox] = useState(false);
+    const [success, setSuccess] = useState(true);
     const [validEmail, setValidEmail] = useState(false);
     const navigate = useNavigate();
 
@@ -32,7 +33,7 @@ export default function Update() {
     const host = "http://localhost:8000";
 
     const updateEmployeeData = async (id) => {
-        if (checkbox && (validEmail || email.length === 0)) {
+        if (checkbox && (validEmail || email.length === 0) && (age === 0 || (age > 10 && age <= 100)) && (phoneNumber.length === 0 || (phoneNumber.length >= 7 && phoneNumber.length <= 10)) && (password.length === 0 || password.length >= 5) && (country.length === 0 || state.length > 0) && (state.length === 0 || city.length > 0)) {
             const info = await fetch(`${host}/api/auth/updateuser/${id}`, {
                 method: "PUT",
                 headers: {
@@ -52,7 +53,16 @@ export default function Update() {
             localStorage.setItem('Date', data.getUsers.date);
             localStorage.setItem('Phone Number', data.getUsers.phoneNumber);
             localStorage.setItem('Flag', 1);
-            navigate('/loginData');
+            if (admin) {
+                navigate('/read');
+            } else {
+                navigate('/loginData');
+            }
+        } else if (country || state) {
+            setSuccess(false);
+            setTimeout(() => {
+                setSuccess(true);
+            }, 3000);
         }
     }
 
@@ -162,6 +172,11 @@ export default function Update() {
 
     return (
         <div>
+            <Message error hidden={success}>
+                <Message.Header>You must fill country, state and city</Message.Header>
+                <p>Please fill the country, state and city in the form below correctly to update the data for yourself !!!</p>
+            </Message>
+
             <Form className="create-form">
                 <div className='create'>
                     <div>
@@ -201,6 +216,7 @@ export default function Update() {
                                     selection
                                     options={stateOptions}
                                     onChange={handleState}
+                                    disabled={!(country && stateOptions.length)}
                                 />
                             </Form.Field>
                         </div>
@@ -228,6 +244,7 @@ export default function Update() {
                                 selection
                                 options={cityOptions}
                                 onChange={handleCity}
+                                disabled={!(state && cityOptions.length)}
                             />
                         </Form.Field>
                         <Form.Field>

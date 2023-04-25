@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Search, Grid, Pagination } from 'semantic-ui-react';
+import { Table, Button, Search, Grid, Pagination, Header, Image } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './App.css';
 
 export default function Read() {
     const [employees, setEmployees] = useState([]);
     const [dummyData, setDummyData] = useState([]);
     const [dummyEmployees, setDummyEmployess] = useState([]);
+    const [begin, setBegin] = useState(0);
+    const [end, setEnd] = useState(2);
     const host = "http://localhost:8000";
 
     const getData = async () => {
@@ -19,36 +21,37 @@ export default function Read() {
             }
         });
         const data = await info.json();
-        setEmployees(data.slice(0, 2));
+        setEmployees(data.slice(begin, end));
         setDummyData(data);
-        setDummyEmployess(data.slice(0, 2));
+        setDummyEmployess(data.slice(begin, end));
     }
 
-    // const onDelete = async (id) => {
-    //     const info = await fetch(`${host}/api/auth/deleteuser/${id}`, {
-    //         method: "DELETE",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     });
-    //     const data = await info.json();
-    //     setEmployees(data.user.slice(0, 2));
-    //     setDummyData(data.user);
-    //     setDummyEmployess(data.user.slice(0, 2));
-    // }
+    const onDelete = async (id) => {
+        const info = await fetch(`${host}/api/auth/deleteuser/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        let data = await info.json();
+        setEmployees(data.user.slice(begin, end));
+        setDummyData(data.user);
+        setDummyEmployess(data.user.slice(begin, end));
+        // getData();
+    }
 
-    // const setData = async (data) => {
-    //     let { name, age, email, salary, country, state, city, phoneNumber } = data;
-    //     localStorage.setItem('ID', data._id);
-    //     localStorage.setItem('Name', name);
-    //     localStorage.setItem('Email', email);
-    //     localStorage.setItem('Age', age);
-    //     localStorage.setItem('Salary', salary);
-    //     localStorage.setItem('Country', country);
-    //     localStorage.setItem('State', state);
-    //     localStorage.setItem('City', city);
-    //     localStorage.setItem('Phone Number', phoneNumber);
-    // }
+    const setData = async (data) => {
+        let { name, age, email, salary, country, state, city, phoneNumber } = data;
+        localStorage.setItem('ID', data._id);
+        localStorage.setItem('Name', name);
+        localStorage.setItem('Email', email);
+        localStorage.setItem('Age', age);
+        localStorage.setItem('Salary', salary);
+        localStorage.setItem('Country', country);
+        localStorage.setItem('State', state);
+        localStorage.setItem('City', city);
+        localStorage.setItem('Phone Number', phoneNumber);
+    }
 
     const searchChange = (e) => {
         let filteredUser = dummyEmployees.filter((data) => {
@@ -60,6 +63,8 @@ export default function Read() {
     const pageChange = (event, { activePage }) => {
         let begin = activePage * 2 - 2;
         let end = activePage * 2;
+        setBegin(begin);
+        setEnd(end);
         setEmployees(dummyData.slice(begin, end));
         setDummyEmployess(dummyData.slice(begin, end));
     }
@@ -70,6 +75,12 @@ export default function Read() {
 
     return (
         <div>
+            <div className='icon'>
+                {/* <Icon name='user agent' size='large' /> */}
+                <Header size='small' as='h2'>
+                    <Image circular src='https://react.semantic-ui.com/images/avatar/large/patrick.png' />
+                </Header>
+            </div>
             <div className='search'>
                 <Grid>
                     <Grid.Column width={6}>
@@ -134,13 +145,13 @@ export default function Read() {
                                     <Table.Cell>{data.phoneNumber}</Table.Cell>
                                     <Table.Cell>{data.date}</Table.Cell>
                                     <Table.Cell>{'Checked'}</Table.Cell>
-                                    {/* <Link to='/update'> */}
+                                    <Link to='/update'>
                                         <Table.Cell>
-                                            <Button disabled /* onClick={() => setData(data)} */>Update</Button>
+                                            <Button active onClick={() => setData(data)} >Update</Button>
                                         </Table.Cell>
-                                    {/* </Link> */}
+                                    </Link>
                                     <Table.Cell>
-                                        <Button disabled /* onClick={() => onDelete(data._id)} */>Delete</Button>
+                                        <Button active onClick={() => onDelete(data._id)}>Delete</Button>
                                     </Table.Cell>
                                 </Table.Row>
                             )

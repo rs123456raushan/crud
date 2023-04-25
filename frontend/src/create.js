@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 import validator from 'validator';
 
-export default function Create() {
+export default function Create({ isAdmin }) {
 
     const [countryOptions, setCountryOptions] = useState([]);
     const [stateOptions, setStateOptions] = useState([]);
@@ -35,19 +35,22 @@ export default function Create() {
             setTimeout(() => {
                 setSuccess(true);
             }, 3000);
-        } else {
+        } else if (checkbox) {
             setSuccess(true);
-        }
-        if (checkbox) {
             const info = await fetch(`${host}/api/auth/createuser`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ name, age, email, salary, country, state, city, phoneNumber, password })
+                body: JSON.stringify({ name, age, email, salary, country, state, city, phoneNumber, password, isAdmin })
             });
             const data = await info.json();
-
+            // if (data.errors.length > 0) {
+            //     setSuccess(false);
+            //     setTimeout(() => {
+            //         setSuccess(true);
+            //     }, 3000);
+            // } else {
             setName(data.user.name);
             setAge(data.user.age);
             setEmail(data.user.email);
@@ -55,6 +58,7 @@ export default function Create() {
             setPhoneNumber(data.user.phoneNumber);
             setPassword(data.user.password);
             navigate('/login');
+            // }
         }
     }
 
@@ -164,14 +168,14 @@ export default function Create() {
 
     return (
         <div>
-            <Message hidden={success}>
-                <Message.Header>You must fill all the details below</Message.Header>
+            <Message error hidden={success}>
+                <Message.Header>You must fill all the details correctly</Message.Header>
                 <p>Please fill out each field in the form below correctly to sign-up for a new account for yourself !!!</p>
             </Message>
 
             <Form className="create-form">
                 <div className='create'>
-                <div>
+                    <div>
                         <Form.Field>
                             <label>Name</label>
                             <input placeholder='Name' value={name} onChange={(e) => setName(e.target.value)} />
@@ -208,6 +212,7 @@ export default function Create() {
                                     selection
                                     options={stateOptions}
                                     onChange={handleState}
+                                    disabled={!(country && stateOptions.length)}
                                 />
                             </Form.Field>
                         </div>
@@ -235,6 +240,7 @@ export default function Create() {
                                 selection
                                 options={cityOptions}
                                 onChange={handleCity}
+                                disabled={!(state && cityOptions.length)}
                             />
                         </Form.Field>
                         <Form.Field>
@@ -253,7 +259,7 @@ export default function Create() {
                 </div>
                 <div className='login'>
                     {/* <Link to='/read'> */}
-                    <Button active onClick={postData} type='submit'>Register</Button>
+                    <Button active onClick={postData} type='submit'>Sign Up</Button>
                     {/* </Link> */}
                 </div>
             </Form>
