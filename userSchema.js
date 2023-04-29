@@ -45,6 +45,10 @@ const UsersSchema = new Schema({
     type: Boolean,
     required: true
   },
+  file: {
+    data: Buffer,
+    contentType: String
+  },
   date: {
     type: Date,
     default: Date.now()

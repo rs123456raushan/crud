@@ -26,10 +26,6 @@ export default function Update({ admin }) {
     const [validEmail, setValidEmail] = useState(false);
     const navigate = useNavigate();
 
-    // let countryData = [];
-    // let stateData = [];
-    // let cityData = [];
-
     const host = "http://localhost:8000";
 
     const updateEmployeeData = async (id) => {
@@ -69,22 +65,18 @@ export default function Update({ admin }) {
     const handleCountry = (e, data) => {
         setCountry(e.target.textContent);
         setDummyCountry(data.value);
-        // countryData = data.value;
-        // setState('');
-        // setDummyState('');
-        getState();
+        setState('');
+        setDummyState('');
     }
 
     const handleState = (e, data) => {
         setState(e.target.textContent);
         setDummyState(data.value);
-        // stateData = data.value;
-        getCity();
+        setCity('');
     }
 
     const handleCity = (e, data) => {
         setCity(e.target.textContent);
-        // cityData = data.value;
     }
 
     const getCountry = () => {
@@ -95,11 +87,6 @@ export default function Update({ admin }) {
                 text: country.name,
                 value: country.isoCode
             })
-            // setCountryOptions(prevArr => [...prevArr, {
-            //     key: country.name,
-            //     text: country.name,
-            //     value: country.isoCode
-            // }])
         });
         setCountryOptions(countryData);
         getState();
@@ -113,11 +100,6 @@ export default function Update({ admin }) {
                 text: state.name,
                 value: state.isoCode
             })
-            // setStateOptions(prevArr => [...prevArr, {
-            //     key: state.name,
-            //     text: state.name,
-            //     value: state.isoCode
-            // }])
         });
         setStateOptions(stateData);
         getCity();
@@ -131,18 +113,11 @@ export default function Update({ admin }) {
                 text: city.name,
                 value: city.name
             })
-            // setCityOptions(prevArr => [...prevArr, {
-            //     key: city.name,
-            //     text: city.name,
-            //     value: city.name
-            // }])
         });
         setCityOptions(cityData);
     }
 
     const validateEmail = (value) => {
-        // let email = e.target.value
-
         if (validator.isEmail(value)) {
             setValidEmail(true);
         } else {
@@ -155,19 +130,21 @@ export default function Update({ admin }) {
 
     useEffect(() => {
         setID(localStorage.getItem('ID'))
-        // getCountry();
     }, []);
 
     useEffect(() => {
         getCountry();
-    }, [country])
+        // eslint-disable-next-line
+    }, [])
 
     useEffect(() => {
         getState();
+        // eslint-disable-next-line
     }, [country])
 
     useEffect(() => {
         getCity();
+        // eslint-disable-next-line
     }, [state])
 
     return (
@@ -262,9 +239,7 @@ export default function Update({ admin }) {
                     </Form.Field>
                 </div>
                 <div className='login'>
-                    {/* <Link to='/loginData'> */}
                     <Button active onClick={() => updateEmployeeData(id)} type='submit'>Update</Button>
-                    {/* </Link> */}
                 </div>
             </Form>
         </div>

@@ -1,81 +1,97 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
-.main{
+.main {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #212121;
+  background-color: #1b1c1d;
   color: whitesmoke;
   flex-direction: column;
 }
 
-.main-header{
+.main-header {
   font-family: 'Montserrat', sans-serif;
 }
 
-.create-form label{
+.create-form label {
   color: whitesmoke !important;
   font-family: 'Montserrat', sans-serif;
   font-size: 12px !important;
 }
 
-.search{
-  /* margin-top: 5px; */
-  /* margin-bottom: 5px; */
-  /* margin-left: 33.33%; */
+.search {
   width: 100vw;
   text-align: center;
 }
 
-.pagination{
+.pagination {
   margin-top: 35px;
   text-align: center;
 }
 
-.login{
+.login {
   width: 100%;
   text-align: center;
   margin-top: 25px;
 }
 
-.searchlogin{
-  /* margin-top: 5px;
-  margin-bottom: 5px; */
-  /* margin-left: 30%; */
+.searchlogin {
   width: 100%;
   text-align: center;
 }
 
-.create{
+.create {
   display: flex;
   flex-direction: row;
   column-gap: 30px;
 }
 
-.center{
+.center {
   display: flex;
   flex-direction: column;
   text-align: center;
   margin-top: 25px;
 }
 
-.table{
+.table {
   margin-left: 5%;
   margin-right: 5%;
 }
 
-.size{
+.size {
   width: 13em;
   margin-bottom: 1em;
 }
 
-.icon{
+.icon {
   text-align: center;
   margin-top: 10px;
   margin-bottom: 20px;
 }
 
-.icon label{
+.icon label {
   color: whitesmoke;
+}
+
+.nav {
+  margin-bottom: -55px;
+}
+
+.grid.container {
+  margin-top: 5em;
+}
+
+.inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  /* z-index: -1; */
+}
+
+.msg {
+  margin-left: 40.33%;
+  margin-bottom: 10px;
 }

@@ -45,12 +45,6 @@ export default function Create({ isAdmin }) {
                 body: JSON.stringify({ name, age, email, salary, country, state, city, phoneNumber, password, isAdmin })
             });
             const data = await info.json();
-            // if (data.errors.length > 0) {
-            //     setSuccess(false);
-            //     setTimeout(() => {
-            //         setSuccess(true);
-            //     }, 3000);
-            // } else {
             setName(data.user.name);
             setAge(data.user.age);
             setEmail(data.user.email);
@@ -58,31 +52,24 @@ export default function Create({ isAdmin }) {
             setPhoneNumber(data.user.phoneNumber);
             setPassword(data.user.password);
             navigate('/login');
-            // }
         }
     }
 
     const handleCountry = (e, data) => {
         setCountry(e.target.textContent);
         setDummyCountry(data.value);
-        // countryData = data.value;
-        // setState('');
-        // setDummyState('');
-        getState();
+        setState('');
+        setDummyState('');
     }
 
     const handleState = (e, data) => {
         setState(e.target.textContent);
         setDummyState(data.value);
-        // setFlag(false);
-        // stateData = data.value;
-        getCity();
+        setCity('');
     }
 
     const handleCity = (e, data) => {
         setCity(e.target.textContent);
-        // setDummyCity(data.value);
-        // cityData = data.value;
     }
 
     const getCountry = () => {
@@ -93,14 +80,8 @@ export default function Create({ isAdmin }) {
                 text: country.name,
                 value: country.isoCode
             })
-            // setCountryOptions(prevArr => [...prevArr, {
-            //     key: country.name,
-            //     text: country.name,
-            //     value: country.isoCode
-            // }])
         });
         setCountryOptions(countryData);
-        // getState();
     }
 
     const getState = () => {
@@ -111,14 +92,8 @@ export default function Create({ isAdmin }) {
                 text: state.name,
                 value: state.isoCode
             })
-            // setStateOptions(prevArr => [...prevArr, {
-            //     key: state.name,
-            //     text: state.name,
-            //     value: state.isoCode
-            // }])
         });
         setStateOptions(stateData);
-        // getCity();
     }
 
     const getCity = () => {
@@ -129,19 +104,11 @@ export default function Create({ isAdmin }) {
                 text: city.name,
                 value: city.name
             })
-            // setCityOptions(prevArr => [...prevArr, {
-            //     key: city.name,
-            //     text: city.name,
-            //     value: city.name
-            // }])
         });
         setCityOptions(cityData);
-        // setFlag(false);
     }
 
     const validateEmail = (value) => {
-        // let email = e.target.value
-
         if (validator.isEmail(value)) {
             setValidEmail(true);
         } else {
@@ -150,20 +117,19 @@ export default function Create({ isAdmin }) {
         setEmail(value);
     }
 
-    // useEffect(() => {
-    //     getCountry();
-    // }, [getCountry])
-
     useEffect(() => {
         getCountry();
-    }, [country])
+        // eslint-disable-next-line
+    }, [])
 
     useEffect(() => {
         getState();
+        // eslint-disable-next-line
     }, [country])
 
     useEffect(() => {
         getCity();
+        // eslint-disable-next-line
     }, [state])
 
     return (
@@ -258,9 +224,7 @@ export default function Create({ isAdmin }) {
                     </Form.Field>
                 </div>
                 <div className='login'>
-                    {/* <Link to='/read'> */}
                     <Button active onClick={postData} type='submit'>Sign Up</Button>
-                    {/* </Link> */}
                 </div>
             </Form>
         </div>

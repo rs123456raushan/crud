@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Search, Grid, Pagination, Header, Image } from 'semantic-ui-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Table, Button, Search, Grid, Pagination, Message } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import { Link } from 'react-router-dom';
 import './App.css';
@@ -8,16 +8,19 @@ export default function Read() {
     const [employees, setEmployees] = useState([]);
     const [dummyData, setDummyData] = useState([]);
     const [dummyEmployees, setDummyEmployess] = useState([]);
+    const [image, setImage] = useState({ preview: '', data: '' })
+    const [success, setSuccess] = useState(true);
     const [begin, setBegin] = useState(0);
     const [end, setEnd] = useState(2);
+    const [id, setId] = useState(null);
+    const inputFile = useRef(null);
     const host = "http://localhost:8000";
 
     const getData = async () => {
         const info = await fetch(`${host}/api/auth/getuser`, {
             method: "GET",
             headers: {
-                "Content-Type": "application/json",
-
+                "Content-Type": "application/json"
             }
         });
         const data = await info.json();
@@ -37,7 +40,6 @@ export default function Read() {
         setEmployees(data.user.slice(begin, end));
         setDummyData(data.user);
         setDummyEmployess(data.user.slice(begin, end));
-        // getData();
     }
 
     const setData = async (data) => {
@@ -69,18 +71,46 @@ export default function Read() {
         setDummyEmployess(dummyData.slice(begin, end));
     }
 
+    const handleFileChange = async (e) => {
+        const img = {
+            preview: URL.createObjectURL(e.target.files[0]),
+            data: e.target.files[0],
+        }
+        setImage(img);
+        let formData = new FormData();
+        formData.append('file', img.data);
+        let res = await fetch(`${host}/api/auth/updateuser/${id}`, {
+            method: 'PUT',
+            body: formData,
+        })
+        if (res.statusText === 'OK') {
+            setSuccess(false);
+            setTimeout(() => {
+                setSuccess(true);
+            }, 3000);
+        }
+    }
+
+    const handleSubmit = (e, _id) => {
+        e.preventDefault();
+        inputFile.current.click();
+        setId(_id);
+    }
+
     useEffect(() => {
         getData();
-    }, [])
+        // eslint-disable-next-line
+    }, [image])
 
     return (
         <div>
-            <div className='icon'>
-                {/* <Icon name='user agent' size='large' /> */}
-                <Header size='small' as='h2'>
-                    <Image circular src='https://react.semantic-ui.com/images/avatar/large/patrick.png' />
-                </Header>
+            <div className='msg'>
+                <Message compact positive hidden={success}>
+                    <Message.Header>File uploaded successfully</Message.Header>
+                    <p>You have upload a file successfully !!!</p>
+                </Message>
             </div>
+
             <div className='search'>
                 <Grid>
                     <Grid.Column width={6}>
@@ -101,7 +131,7 @@ export default function Read() {
                             <Table.HeaderCell>City</Table.HeaderCell>
                             <Table.HeaderCell>Phone Number</Table.HeaderCell>
                             <Table.HeaderCell>Date</Table.HeaderCell>
-                            <Table.HeaderCell>Checked</Table.HeaderCell>
+                            <Table.HeaderCell>File</Table.HeaderCell>
                             <Table.HeaderCell>Update</Table.HeaderCell>
                             <Table.HeaderCell>Delete</Table.HeaderCell>
                         </Table.Row>
@@ -116,42 +146,39 @@ export default function Read() {
                                     <Table.Cell>{data.email}</Table.Cell>
                                     <Table.Cell>{data.salary}</Table.Cell>
                                     <Table.Cell>{data.country}</Table.Cell>
-                                    {/* <Table.Cell>
-                                        <Dropdown
-                                            placeholder='Select Country'
-                                            fluid
-                                            selection
-                                            options={countryOptions}
-                                        />
-                                    </Table.Cell> */}
                                     <Table.Cell>{data.state}</Table.Cell>
                                     <Table.Cell>{data.city}</Table.Cell>
-                                    {/* <Table.Cell>
-                                        <Dropdown
-                                            placeholder='Select State'
-                                            fluid
-                                            selection
-                                            options={countryOptions}
-                                        />
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <Dropdown
-                                            placeholder='Select City'
-                                            fluid
-                                            selection
-                                            options={countryOptions}
-                                        />
-                                    </Table.Cell> */}
                                     <Table.Cell>{data.phoneNumber}</Table.Cell>
                                     <Table.Cell>{data.date}</Table.Cell>
-                                    <Table.Cell>{'Checked'}</Table.Cell>
+                                    <Table.Cell>
+                                        <div>
+                                            <input onChange={(e) => handleFileChange(e)}
+                                                type="file"
+                                                className="inputfile"
+                                                id="embedpollfileinput"
+                                                ref={inputFile}
+                                            />
+                                            {/* <label htmlFor="embedpollfileinput" className="ui small red floated button">
+                                                <i className="ui upload icon"></i>
+                                                Upload
+                                            </label> */}
+                                            <button
+                                                type="submit"
+                                                className="ui small red floated button"
+                                                id="embedpollfileinput"
+                                                onClick={(e) => handleSubmit(e, data._id)}>
+                                                <i className="ui upload icon"></i>
+                                                Upload
+                                            </button>
+                                        </div>
+                                    </Table.Cell>
                                     <Link to='/update'>
                                         <Table.Cell>
-                                            <Button active onClick={() => setData(data)} >Update</Button>
+                                            <Button active size='small' onClick={() => setData(data)}>Update</Button>
                                         </Table.Cell>
                                     </Link>
                                     <Table.Cell>
-                                        <Button active onClick={() => onDelete(data._id)}>Delete</Button>
+                                        <Button active size='small' onClick={() => onDelete(data._id)}>Delete</Button>
                                     </Table.Cell>
                                 </Table.Row>
                             )

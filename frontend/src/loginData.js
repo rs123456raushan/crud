@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Search, Grid, Pagination } from 'semantic-ui-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Table, Button, Search, Grid, Pagination, Message } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import { Link } from 'react-router-dom';
 import './App.css';
@@ -8,6 +8,9 @@ export default function LoginData() {
     const [employees, setEmployees] = useState([]);
     const [dummyData, setDummyData] = useState([]);
     const [dummyEmployees, setDummyEmployees] = useState([]);
+    const [id, setId] = useState(null);
+    const inputFile = useRef(null);
+    const [success, setSuccess] = useState(true);
     const host = "http://localhost:8000";
 
     const onDelete = async (id) => {
@@ -18,9 +21,6 @@ export default function LoginData() {
             }
         });
         await info.json();
-        // setEmployees(data.user.slice(0, 2));
-        // setDummyData(data.user);
-        // setDummyEmployees(data.user.slice(0, 2));
         setEmployees([]);
         setDummyData([]);
         setDummyEmployees([]);
@@ -55,6 +55,32 @@ export default function LoginData() {
         setDummyEmployees(dummyData.slice(begin, end));
     }
 
+    const handleFileChange = async (e) => {
+        const img = {
+            preview: URL.createObjectURL(e.target.files[0]),
+            data: e.target.files[0],
+
+        }
+        let formData = new FormData();
+        formData.append('file', img.data);
+        let res = await fetch(`${host}/api/auth/updateuser/${id}`, {
+            method: 'PUT',
+            body: formData,
+        })
+        if(res.statusText === 'OK'){
+            setSuccess(false);
+            setTimeout(() => {
+                setSuccess(true);
+            }, 3000);
+        }
+    }
+
+    const handleSubmit = (e, _id) => {
+        e.preventDefault();
+        inputFile.current.click();
+        setId(_id);
+    }
+
     useEffect(() => {
         let obj = {};
         obj.id = localStorage.getItem('ID');
@@ -77,6 +103,13 @@ export default function LoginData() {
 
     return (
         <div>
+            <div className='msg'>
+                <Message compact positive hidden={success}>
+                    <Message.Header>File uploaded successfully</Message.Header>
+                    <p>You have upload a file successfully !!!</p>
+                </Message>
+            </div>
+
             <div className='searchlogin'>
                 <Grid>
                     <Grid.Column width={6}>
@@ -97,7 +130,7 @@ export default function LoginData() {
                             <Table.HeaderCell>City</Table.HeaderCell>
                             <Table.HeaderCell>Phone Number</Table.HeaderCell>
                             <Table.HeaderCell>Date</Table.HeaderCell>
-                            <Table.HeaderCell>Checked</Table.HeaderCell>
+                            <Table.HeaderCell>File</Table.HeaderCell>
                             <Table.HeaderCell>Update</Table.HeaderCell>
                             <Table.HeaderCell>Delete</Table.HeaderCell>
                         </Table.Row>
@@ -116,14 +149,35 @@ export default function LoginData() {
                                     <Table.Cell>{data.city}</Table.Cell>
                                     <Table.Cell>{data.phoneNumber}</Table.Cell>
                                     <Table.Cell>{data.date}</Table.Cell>
-                                    <Table.Cell>{'Checked'}</Table.Cell>
+                                    <Table.Cell>
+                                        <div>
+                                            <input onChange={(e) => handleFileChange(e)}
+                                                type="file"
+                                                className="inputfile"
+                                                id="embedpollfileinput"
+                                                ref={inputFile}
+                                            />
+                                            {/* <label htmlFor="embedpollfileinput" className="ui small red floated button">
+                                                <i className="ui upload icon"></i>
+                                                Upload
+                                            </label> */}
+                                            <button
+                                                type="submit"
+                                                className="ui small red floated button"
+                                                id="embedpollfileinput"
+                                                onClick={(e) => handleSubmit(e, data.id)}>
+                                                <i className="ui upload icon"></i>
+                                                Upload
+                                            </button>
+                                        </div>
+                                    </Table.Cell>
                                     <Link to='/update'>
                                         <Table.Cell>
-                                            <Button active onClick={() => setData(data)}>Update</Button>
+                                            <Button active size='small' onClick={() => setData(data)}>Update</Button>
                                         </Table.Cell>
                                     </Link>
                                     <Table.Cell>
-                                        <Button active onClick={() => onDelete(data.id)}>Delete</Button>
+                                        <Button active size='small' onClick={() => onDelete(data.id)}>Delete</Button>
                                     </Table.Cell>
                                 </Table.Row>
                             )

@@ -59,8 +59,6 @@ export default function Login({ setAdmin, setReadIn, setLoggedIn }) {
     }
 
     const validateEmail = (value) => {
-        // let email = e.target.value
-
         if (validator.isEmail(value)) {
             setValidEmail(true);
         } else {
@@ -95,9 +93,7 @@ export default function Login({ setAdmin, setReadIn, setLoggedIn }) {
                     <Form.Field>
                         <Checkbox label='I agree to the Terms and Conditions' onChange={(e) => setCheckbox(!checkbox)} />
                     </Form.Field>
-                    {/* <Link to='/loginData'> */}
                     <Button active onClick={postData} type='submit'>Sign In</Button>
-                    {/* </Link> */}
                 </div>
             </Form>
         </div>

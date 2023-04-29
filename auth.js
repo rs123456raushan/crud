@@ -6,12 +6,24 @@ const City = require("./citySchema");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const table = require('table');
+const multer = require('multer');
 const router = express.Router();
 const { body, validationResult, query } = require('express-validator');
 
 const JWT_SECRET = "Roshanis@goodboy";
 
-// password : 123456, 789012
+// Upload a file via multer
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'files/')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    },
+})
+
+const upload = multer({ storage: storage });
 
 // Create the user in employee table
 
@@ -47,17 +59,6 @@ router.post('/createuser', [
                 isAdmin: req.body.isAdmin,
                 password: securePassword
             })
-            // await Country.create({
-            //     name: req.body.country
-            // })
-            // await State.create({
-            //     name: req.body.name,
-            //     country: req.body.country
-            // })
-            // await City.create({
-            //     name: req.body.name,
-            //     state: req.body.state
-            // })
             const data = {
                 user: {
                     id: user.id
@@ -84,7 +85,6 @@ router.get('/login', [
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        // console.log(req.query.email, req.query.password)
         let user = await User.findOne({ email: req.query.email });
 
         if (!user) {
@@ -129,11 +129,7 @@ router.get('/getuser', async (req, res) => {
             data.push(result);
         })
         let x = table.table(data, config);
-        console.log(x)
-        // let page = Number(req.query.page) || 1;
-        // let limit = Number(req.query.limit) || 50;
-        // let skip = (page - 1) * limit;
-        // let users = await User.find({}).skip(skip).limit(limit);
+        console.log(x);
         let users = await User.find().sort({ "salary": 1, "age": 1 });
         res.json(users);
     } catch (error) {
@@ -144,9 +140,10 @@ router.get('/getuser', async (req, res) => {
 
 // Update the data in employee table
 
-router.put('/updateuser/:id', async (req, res) => {
+router.put('/updateuser/:id', upload.single('file'), async (req, res) => {
     const { name, age, email, salary, country, state, city, phoneNumber, password } = req.body;
     try {
+        let success = false;
         let newUser = {};
         if (name) { newUser.name = name };
         if (age && (age >= 10 && age <= 100)) {
@@ -159,9 +156,16 @@ router.put('/updateuser/:id', async (req, res) => {
         if (city) { newUser.city = city };
         if (phoneNumber && (phoneNumber.length > 6 && phoneNumber.length < 11)) {
             newUser.phoneNumber = phoneNumber
-        };
+        }
         if (password && password.length > 4) {
             newUser.phoneNumber = phoneNumber
+        };
+        if(req.file){
+            var img = {
+                data: req.file.filename,
+                contentType: req.file.mimetype
+            };
+            newUser.file = img;
         };
 
         let getUsers = await User.findById(req.params.id);
